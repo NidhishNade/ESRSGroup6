@@ -127,7 +127,7 @@ def login(request):
 
 
 def check_password(input_password, stored_password):
-    print(str(str(input_password) == str(stored_password))+str(input_password)+str(stored_password))
+    print(str(str(input_password) == str(stored_password)) + str(input_password) + str(stored_password))
     return str(input_password) == str(stored_password)
 
 
@@ -144,6 +144,59 @@ class SignupView(generics.CreateAPIView):
             'username': user.username,
             'email': user.email
         }, status=status.HTTP_201_CREATED)
+
+
+@csrf_exempt
+def getusertasks(request):
+    if request.method == 'POST':
+        print("Entered in if")
+        cnx = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="123456",
+            database="esrsgroup6"
+        )
+        if cnx and cnx.is_connected():
+            with cnx.cursor() as cursor:
+                data = json.loads(request.body)
+                userid = data.get('user_id')
+                # roleName = data.get('roleName')
+                print("before authenticate")
+                sql = ("SELECT * FROM task t INNER JOIN users u ON t.task_assigned_to_iduser = u.user_id WHERE "
+                       "u.user_id = %s")
+                sqlvalue = (userid,)
+                cursor.execute(sql, sqlvalue)
+                rows = cursor.fetchall()
+                cnx.close()
+                return JsonResponse({'data': rows})
+        else:
+            return Response({'error': 'error connecting to the server'})
+
+
+def getusertasksassignedbyuser(request):
+    if request.method == 'POST':
+        print("Entered in if")
+        cnx = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="123456",
+            database="esrsgroup6"
+        )
+        if cnx and cnx.is_connected():
+            with cnx.cursor() as cursor:
+                data = json.loads(request.body)
+                userid = data.get('user_id')
+                # roleName = data.get('roleName')
+                print("before authenticate")
+                sql = ("SELECT * FROM task t INNER JOIN users u ON t.task_assigned_by_iduser = u.user_id WHERE "
+                       "u.user_id = %s")
+                sqlvalue = (userid,)
+                cursor.execute(sql, sqlvalue)
+                rows = cursor.fetchall()
+                cnx.close()
+                return JsonResponse({'data': rows})
+        else:
+            return Response({'error': 'error connecting to the server'})
 
 
 class UserViewSet(viewsets.ModelViewSet):

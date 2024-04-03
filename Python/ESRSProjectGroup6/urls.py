@@ -13,5 +13,7 @@ urlpatterns = [
     # path('api/account/', include('ESRSProjectGroup6.urls')),
     path('all_users/', views.all_users),
     path('login/',views.login),
-    path('signup/', views.signup)
+    path('signup/', views.signup),
+    path('getuserdata/',views.getusertasks),
+    path('gettaskassignedbyuser/',views.getusertasksassignedbyuser)
 ]
